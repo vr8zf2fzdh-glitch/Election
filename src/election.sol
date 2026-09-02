@@ -87,10 +87,19 @@ contract election {
         
 
     }
-    // TO-do complete this function
-    function createParties() public {
+    // Create parties from the existing candidates
+function createParties() public {
+if (msg.sender != chairman) {
+revert Election__notChairmanError();
+}
 
-    }
+require(candidates.length > 0, "No candidates available");
+
+for (uint64 i = 0; i < candidates.length; i++) {
+delete candidateInfo[i + 1];
+candidateInfo[i + 1].push(candidates[i]);
+}
+}
     // remove candidate function
     function removeCandidates() public {
         if (msg.sender != chairman) {
@@ -152,6 +161,18 @@ contract election {
     ///////////GETTER FUNCTION////////
     // complete this function 
     function getWinner() public view returns(uint256) {
-        // winner();
-    }
+require(candidates.length > 0, "No candidates available");
+
+uint256 winningCandidateId = 1;
+uint256 highestVotes = candidates[0].totalCandidateVote;
+
+for (uint256 i = 1; i < candidates.length; i++) {
+if (candidates[i].totalCandidateVote > highestVotes) {
+highestVotes = candidates[i].totalCandidateVote;
+winningCandidateId = i + 1;
+}
+}
+
+return winningCandidateId;
+}
 }
